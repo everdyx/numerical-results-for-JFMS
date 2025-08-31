@@ -72,20 +72,16 @@ def plot_boxplot(series_list, title,
 
 
 def get_file_names(folder_path):
-    """
-    获取指定文件夹下的所有文件名
-    :param folder_path: 文件夹路径
-    :return: 文件名列表
-    """
+
     file_names = []
     try:
 
         if not os.path.exists(folder_path):
-            raise FileNotFoundError(f"错误：文件夹 '{folder_path}' 不存在")
+            raise FileNotFoundError(f"wrong：folder '{folder_path}' does not exist")
 
 
         if not os.path.isdir(folder_path):
-            raise NotADirectoryError(f"错误：'{folder_path}' 不是一个目录")
+            raise NotADirectoryError(f"wrong：'{folder_path}' is not a directory")
 
 
         items = os.listdir(folder_path)
@@ -97,9 +93,9 @@ def get_file_names(folder_path):
                 file_names.append(item)
 
     except PermissionError:
-        print(f"错误：没有权限访问文件夹 '{folder_path}'")
+        print(f"wrong：no permission '{folder_path}'")
     except Exception as e:
-        print(f"错误：发生未知错误 - {e}")
+        print(f"wrong：unknown error - {e}")
 
     return file_names
 
@@ -111,19 +107,12 @@ df_large={}
 df_meta={}
 scen = ["P2M2V2 CT3.0", "P2M2V2 CT8.0", "P2M2V2 CT13.0", "P3M2V2 CT3.0", "P3M2V2 CT8.0", "P3M2V2 CT13.0", "P10M2V2 CT3.0", "P10M2V2 CT8.0", "P10M2V2 CT13.0", "P20M2V2 CT3.0", "P20M2V2 CT8.0", "P20M2V2 CT13.0", "P10M8V2 CT3.0", "P10M8V8 CT3.0", "P10M8V14 CT3.0", "P10M8V20 CT3.0", "P20M8V2 CT3.0", "P20M8V8 CT3.0", "P20M8V14 CT3.0", "P20M8V20 CT3.0", ]
 
-algo=["algo_exact", "algo_small", "algo_large", "algo_metaHeur"]
+algo=["SD and CP", "JFMS\\small and medium","JFMS\\large", "LNS"]
 current_dir = os.getcwd()
 for i in range(len(algo)):
     folder_path=os.path.join(current_dir, algo[i])
-    if i ==3:
-        folder_path = os.path.join(folder_path, "output")
-    else:
-        folder_path=os.path.join(folder_path, "output")
     data_files=get_file_names(folder_path)
-
     pattern = r'^P(?P<P>\d+)M(?P<M>\d+)V(?P<V>\d+) CT(?P<CT>\d+\.\d+)(?=_|\.|$)'
-
-
     extracted_data = []
     for file in data_files:
         match = re.match(pattern, file)
@@ -145,7 +134,7 @@ for i in range(len(algo)):
         print(scenario)
         print(algo[i])
         df = pd.read_csv(path, sep=',')
-        if algo[i]== "algo_exact":
+        if algo[i]== "SD and CP":
             if len(df.columns)>10:
                 df = df.drop(df.columns[-1], axis=1)
             rename_dict = {
@@ -160,7 +149,7 @@ for i in range(len(algo)):
             df = df.drop('Gap-SD-E', axis=1)
             df = df.iloc[np.repeat(np.arange(len(df)), 5)].reset_index(drop=True)
             df_exact[scenario]=df
-        elif algo[i]== "algo_small":
+        elif algo[i]== "JFMS\\small and medium":
             if scenario in ["P2M2V2 CT3.0","P2M2V2 CT8.0","P2M2V2 CT13.0","P3M2V2 CT3.0","P3M2V2 CT8.0","P3M2V2 CT13.0"]:
                 if len(df.columns)>20:
                     df = df.drop(df.columns[-1], axis=1)
@@ -195,7 +184,7 @@ for i in range(len(algo)):
                 df = df.drop([ 'G(UB-LB)', 'LBImprov', 'UBImprov','G(FCFS-UB)'], axis=1)
                 df['UBNL'] = df['UBNL'].where(df['UBNL'] <= df['RULE'], df['RULE'])
                 df_small2[scenario]=df
-        elif algo[i]== "algo_large":
+        elif algo[i]== "JFMS\\large":
             if len(df.columns)>14:
                 df = df.drop(df.columns[-1], axis=1)
             rename_dict = {
@@ -212,7 +201,7 @@ for i in range(len(algo)):
             df = df.drop(['G(UB-LB)', 'LBImprov', 'UBImprov', 'G(FCFS-UB)'],axis=1)
             df['UBNL'] = df['UBNL'].where(df['UBNL'] <= df['RULE'], df['RULE'])
             df_large[scenario]=df
-        elif algo[i] == "algo_metaHeur":
+        elif algo[i] == "LNS":
 
             if len(df.columns)>6:
                 df = df.drop(df.columns[-1], axis=1)
@@ -453,7 +442,7 @@ plt.show()
 
 df_all['scen_id']=df_all['scen_id']+1
 df_all.to_excel(
-    'output.xlsx',  
+    'results for table 4.xlsx',
     sheet_name='Sheet1',  
     index=False,  
     engine='openpyxl'  

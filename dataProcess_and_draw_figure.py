@@ -670,3 +670,22 @@ df_out.to_excel(
     engine='openpyxl'
 )
 
+#%%
+x = [0,50,100,150,200]
+y=[1656.1033198389416,1756.1033333158566,1867.4366531795608,2020.6866666181402,2227.4366531658707]
+
+plt.figure(figsize=(10, 6))
+
+plt.plot(x, y, color='blue', linestyle='-', linewidth=2, marker='o', markersize=5)
+
+plt.xlabel('Distance between component loading point\n and charging station', fontsize=fontsize)
+plt.ylabel('Objective value', fontsize=fontsize)
+
+plt.grid(True, linestyle='--', alpha=0.7)
+
+plt.tight_layout(pad=0.1, h_pad=1, w_pad=0.1)
+plt.savefig('lemma value',transparent=True)
+plt.show()
+
+
+

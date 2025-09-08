@@ -644,7 +644,6 @@ plt.savefig('G-JFMS-LNS-RULE_Combined', dpi=300, bbox_inches='tight')
 plt.show()
 
 #%%
-from glob import glob
 current_dir = os.getcwd()
 folder_path=os.path.join(current_dir, "prop value")
 df_out = pd.DataFrame(columns=['without q and b', 'with q', 'with b', 'n without q and b', 'n with q', 'n with b'])
@@ -658,9 +657,9 @@ for scenario in scen:
     b=(df[scenario]['time_CP_q'].mean())
     c=(df[scenario]['time_CP_b'].mean())
 
-    d=(df[scenario].query('time_CP > 900').shape[0])
-    e=(df[scenario].query('time_CP_q > 900').shape[0])
-    f=(df[scenario].query('time_CP_b > 900').shape[0])
+    d=(df[scenario].query('time_CP <= 900').shape[0])
+    e=(df[scenario].query('time_CP_q <= 900').shape[0])
+    f=(df[scenario].query('time_CP_b <= 900').shape[0])
     df_out.loc[i]=[a,b,c,d,e,f]
     i=i+1
 
